@@ -6,6 +6,9 @@
 # ehext
 Extensions for the go package github.com/looplab/eventhorizon
 
+```
 go get github.com/Brandon2255p/ehext
-
+```
+```
 go install  github.com/Brandon2255p/ehext
+```
