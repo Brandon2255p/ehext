@@ -14,25 +14,30 @@ func makeAggregateData(aggregateName string, events []EventData) []AggregateData
 	return data
 }
 
+// AggregateData todo
 type AggregateData struct {
 	AggregateName string
 	Event         EventData
 }
 
+// EventData todo
 type EventData struct {
 	Name        string
 	Description string
 }
 
+// EventMember todo
 type EventMember struct {
 	MemberType string
 	MemberName string
 	MemberTag  string
 }
 
+// GenerateEvent todo
 func GenerateEvent(e EventData) string {
-	const templateEvent = `// Code generated .* DO NOT EDIT\.
-package domain
+	const templateEvent = `package domain
+
+// Code generated .* DO NOT EDIT\.
 
 import (
 	eh "github.com/looplab/eventhorizon"
@@ -55,9 +60,12 @@ func init() {
 	return string(buff.Bytes())
 }
 
+// GenerateCommand todo
 func GenerateCommand(e EventData) string {
-	const templateCommand = `// Code generated .* DO NOT EDIT\.
-package domain
+	const templateCommand = `package domain
+
+// Code generated .* DO NOT EDIT\.
+
 
 import (
 	eh "github.com/looplab/eventhorizon"
@@ -74,9 +82,12 @@ const (
 	return string(buff.Bytes())
 }
 
+// GenerateRegisterCommand todo
 func GenerateRegisterCommand(events []EventData) string {
-	const temp = `// Code generated .* DO NOT EDIT\.
-package domain
+	const temp = `package domain
+
+// Code generated .* DO NOT EDIT\.
+
 
 import (
 	eh "github.com/looplab/eventhorizon"
@@ -108,9 +119,12 @@ func registerCommands(h *bus.CommandHandler, c eh.CommandHandler) error {
 	return string(buff.Bytes())
 }
 
+// GenerateHandleCommand todo
 func GenerateHandleCommand(aggregateName string, events []EventData) string {
-	const temp = `// Code generated .* DO NOT EDIT\.
-package domain
+	const temp = `package domain
+
+// Code generated .* DO NOT EDIT\.
+
 
 import (
 	"context"
@@ -133,6 +147,8 @@ func (a *{{(index . 0).AggregateName}}) HandleCommand(ctx context.Context, cmd e
 	t.ExecuteTemplate(&buff, "handle", makeAggregateData(aggregateName, events))
 	return string(buff.Bytes())
 }
+
+// GenerateCommandHandlers todo
 func GenerateCommandHandlers(aggregateName string, events []EventData) string {
 	const temp = `package domain
 
@@ -152,6 +168,7 @@ func (a *{{.AggregateName}})handle{{.Event.Name}}(ctx context.Context, cmd *{{.E
 	return string(buff.Bytes())
 }
 
+// Write todo
 func Write(outputFolder, data string) error {
 	f, err := os.Create(outputFolder)
 	if err != nil {
@@ -162,9 +179,12 @@ func Write(outputFolder, data string) error {
 	return err
 }
 
+// GenerateApplyEvent todo
 func GenerateApplyEvent(aggregateName string, events []EventData) string {
-	const temp = `// Code generated .* DO NOT EDIT\.
-package domain
+	const temp = `package domain
+
+// Code generated .* DO NOT EDIT\.
+
 
 import (
 	"context"
@@ -188,6 +208,7 @@ func (a *{{(index . 0).AggregateName}}) ApplyEvent(ctx context.Context, event eh
 	return string(buff.Bytes())
 }
 
+// GenerateEventAppliers todo
 func GenerateEventAppliers(aggregateName string, events []EventData) string {
 	const temp = `package domain
 

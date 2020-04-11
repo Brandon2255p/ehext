@@ -17,7 +17,7 @@ func main() {
 	writeEventAppliers := false
 	writeCommandHandlers := false
 	flag.BoolVar(&writeEventAppliers, "appliers", false, "Overwrites the event appliers file")
-	flag.BoolVar(&writeCommandHandlers, "hanlders", false, "Overwrites the command handler class")
+	flag.BoolVar(&writeCommandHandlers, "handlers", false, "Overwrites the command handler class")
 	flag.StringVar(&aggregateName, "aggregate", "", "the name of the aggregate. ThingAggregate")
 	flag.StringVar(&searchLocation, "search", "", "the place to look for events")
 	flag.Parse()
