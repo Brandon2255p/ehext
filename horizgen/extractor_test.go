@@ -3,7 +3,7 @@ package horizgen_test
 import (
 	"testing"
 
-	"github.com/brandon2255p/ehext/horizgen"
+	"github.com/Brandon2255p/ehext/horizgen"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

@@ -8,7 +8,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/brandon2255p/ehext/horizgen"
+	"github.com/Brandon2255p/ehext/horizgen"
 )
 
 func main() {
