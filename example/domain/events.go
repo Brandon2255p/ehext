@@ -1,6 +1,6 @@
 package domain
 
-//go:generate ehext -search ./$GOFILE
+//go:generate ehext -aggregate SpecialThingAggregate -search ./$GOFILE
 
 type ThingMadeEvent struct {
 }
