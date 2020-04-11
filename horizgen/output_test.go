@@ -10,7 +10,7 @@ import (
 
 func TestGenerateEventType(t *testing.T) {
 	input := horizgen.EventData{
-		Event:       "ThingyCreatedEvent",
+		Name:        "ThingyCreatedEvent",
 		Description: "This is how thingies are made",
 	}
 	expected := `// Code generated .* DO NOT EDIT\.
@@ -37,7 +37,7 @@ func init() {
 
 func TestGenerateCommandType(t *testing.T) {
 	input := horizgen.EventData{
-		Event:       "CreateCommand",
+		Name:        "CreateCommand",
 		Description: "This is how thingies are made",
 	}
 	expected := `// Code generated .* DO NOT EDIT\.
@@ -58,10 +58,10 @@ const (
 
 func TestGenerateCommandRegisterType(t *testing.T) {
 	input := []horizgen.EventData{{
-		Event:       "TransferOwnershipCommand",
+		Name:        "TransferOwnershipCommand",
 		Description: "This is how thingies are made",
 	}, {
-		Event:       "StartOwnershipCommand",
+		Name:        "StartOwnershipCommand",
 		Description: "This is how thingies are made",
 	}}
 	expected := `// Code generated .* DO NOT EDIT\.
@@ -99,10 +99,10 @@ func registerCommands(h *bus.CommandHandler, c eh.CommandHandler) error {
 
 func TestGenerateHandleCommand(t *testing.T) {
 	input := []horizgen.EventData{{
-		Event:       "TransferOwnershipCommand",
+		Name:        "TransferOwnershipCommand",
 		Description: "This is how thingies are made",
 	}, {
-		Event:       "StartOwnershipCommand",
+		Name:        "StartOwnershipCommand",
 		Description: "This is how thingies are made",
 	}}
 	expected := `// Code generated .* DO NOT EDIT\.
@@ -116,7 +116,7 @@ import (
 )
 
 // HandleCommand todo
-func (a *PlantAggregate) HandleCommand(ctx context.Context, cmd eh.Command) error {
+func (a *ThingAggregate) HandleCommand(ctx context.Context, cmd eh.Command) error {
 	switch cmd := cmd.(type) { 
 	case *TransferOwnershipCommand:
 		return a.handleTransferOwnershipCommand(ctx, cmd)
@@ -127,16 +127,16 @@ func (a *PlantAggregate) HandleCommand(ctx context.Context, cmd eh.Command) erro
 }
 `
 
-	output := horizgen.GenerateHandleCommand(input)
+	output := horizgen.GenerateHandleCommand("ThingAggregate", input)
 	assert.Equal(t, expected, output)
 }
 
 func TestGenerateApplyEvent(t *testing.T) {
 	input := []horizgen.EventData{{
-		Event:       "ThingyCreatedEvent",
+		Name:        "ThingyCreatedEvent",
 		Description: "This is how thingies are made",
 	}, {
-		Event:       "Thingy2CreatedEvent",
+		Name:        "Thingy2CreatedEvent",
 		Description: "This is how thingies are made",
 	}}
 	expected := `// Code generated .* DO NOT EDIT\.
@@ -150,7 +150,7 @@ import (
 )
 
 // ApplyEvent implements the ApplyEvent method of the Aggregate interface.
-func (a *PlantAggregate) ApplyEvent(ctx context.Context, event eh.Event) error {
+func (a *ThingAggregate) ApplyEvent(ctx context.Context, event eh.Event) error {
 	switch event.EventType() { 
 	case ThingyCreatedEventType:
 		return a.applyThingyCreatedEvent(ctx, event)
@@ -161,16 +161,16 @@ func (a *PlantAggregate) ApplyEvent(ctx context.Context, event eh.Event) error {
 }
 `
 
-	output := horizgen.GenerateApplyEvent(input)
+	output := horizgen.GenerateApplyEvent("ThingAggregate", input)
 	assert.Equal(t, expected, output)
 }
 
 func TestGenerateCommandHandlers(t *testing.T) {
 	input := []horizgen.EventData{{
-		Event:       "TransferOwnershipCommand",
+		Name:        "TransferOwnershipCommand",
 		Description: "This is how thingies are made",
 	}, {
-		Event:       "StartOwnershipCommand",
+		Name:        "StartOwnershipCommand",
 		Description: "This is how thingies are made",
 	}}
 	expected := `package domain
@@ -181,25 +181,25 @@ import (
 	eh "github.com/looplab/eventhorizon"
 )
 
-func (a *PlantAggregate)handleTransferOwnershipCommand(ctx context.Context, cmd *TransferOwnershipCommand) error {
+func (a *ThingAggregate)handleTransferOwnershipCommand(ctx context.Context, cmd *TransferOwnershipCommand) error {
 	return nil
 }
 
-func (a *PlantAggregate)handleStartOwnershipCommand(ctx context.Context, cmd *StartOwnershipCommand) error {
+func (a *ThingAggregate)handleStartOwnershipCommand(ctx context.Context, cmd *StartOwnershipCommand) error {
 	return nil
 }
 `
 
-	output := horizgen.GenerateCommandHandlers(input)
+	output := horizgen.GenerateCommandHandlers("ThingAggregate", input)
 	assert.Equal(t, expected, output)
 }
 
 func TestGenerateEventAppliers(t *testing.T) {
 	input := []horizgen.EventData{{
-		Event:       "ThingyCreatedEvent",
+		Name:        "ThingyCreatedEvent",
 		Description: "This is how thingies are made",
 	}, {
-		Event:       "Thingy2CreatedEvent",
+		Name:        "Thingy2CreatedEvent",
 		Description: "This is how thingies are made",
 	}}
 	expected := `package domain
@@ -210,7 +210,7 @@ import (
 	eh "github.com/looplab/eventhorizon"
 )
 
-func (a *PlantAggregate) applyThingyCreatedEvent(ctx context.Context, event eh.Event) error {
+func (a *ThingAggregate) applyThingyCreatedEvent(ctx context.Context, event eh.Event) error {
 	_, ok := event.Data().(ThingyCreatedEvent)
 	if !ok {
 		panic("INVALID applyThingyCreatedEvent is trying to convert invalid data")
@@ -218,7 +218,7 @@ func (a *PlantAggregate) applyThingyCreatedEvent(ctx context.Context, event eh.E
 	return nil
 }
 
-func (a *PlantAggregate) applyThingy2CreatedEvent(ctx context.Context, event eh.Event) error {
+func (a *ThingAggregate) applyThingy2CreatedEvent(ctx context.Context, event eh.Event) error {
 	_, ok := event.Data().(Thingy2CreatedEvent)
 	if !ok {
 		panic("INVALID applyThingy2CreatedEvent is trying to convert invalid data")
@@ -227,13 +227,13 @@ func (a *PlantAggregate) applyThingy2CreatedEvent(ctx context.Context, event eh.
 }
 `
 
-	output := horizgen.GenerateEventAppliers(input)
+	output := horizgen.GenerateEventAppliers("ThingAggregate", input)
 	assert.Equal(t, expected, output)
 }
 
 func TestWrite(t *testing.T) {
 	input := horizgen.EventData{
-		Event:       "ThingyCreatedEvent",
+		Name:        "ThingyCreatedEvent",
 		Description: "This is how thingies are made",
 	}
 	err := horizgen.Write("./_generate.go", horizgen.GenerateEvent(input))

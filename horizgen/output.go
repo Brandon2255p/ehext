@@ -6,8 +6,21 @@ import (
 	"text/template"
 )
 
+func makeAggregateData(aggregateName string, events []EventData) []AggregateData {
+	data := make([]AggregateData, len(events))
+	for i, v := range events {
+		data[i] = AggregateData{aggregateName, v}
+	}
+	return data
+}
+
+type AggregateData struct {
+	AggregateName string
+	Event         EventData
+}
+
 type EventData struct {
-	Event       string
+	Name        string
 	Description string
 }
 
@@ -26,13 +39,13 @@ import (
 )
 
 const (
-	// {{.Event}}Type {{.Description}}
-	{{.Event}}Type eh.EventType = "{{.Event}}"
+	// {{.Name}}Type {{.Description}}
+	{{.Name}}Type eh.EventType = "{{.Name}}"
 )
 
 func init() {
-	eh.RegisterEventData({{.Event}}Type, func() eh.EventData {
-		return &{{.Event}}{}
+	eh.RegisterEventData({{.Name}}Type, func() eh.EventData {
+		return &{{.Name}}{}
 	})
 }
 `
@@ -51,8 +64,8 @@ import (
 )
 
 const (
-	// {{.Event}}Type {{.Description}}
-	{{.Event}}Type eh.CommandType = "{{.Event}}"
+	// {{.Name}}Type {{.Description}}
+	{{.Name}}Type eh.CommandType = "{{.Name}}"
 )
 `
 	t := template.Must(template.New("command").Parse(templateCommand))
@@ -85,7 +98,7 @@ func handleError(err error, new error) error {
 func registerCommands(h *bus.CommandHandler, c eh.CommandHandler) error {
 	var err error
 {{range .}}
-	err = handleError(err, h.SetHandler(c, {{.Event}}Type)){{end}}
+	err = handleError(err, h.SetHandler(c, {{.Name}}Type)){{end}}
 	return err
 }
 `
@@ -95,7 +108,7 @@ func registerCommands(h *bus.CommandHandler, c eh.CommandHandler) error {
 	return string(buff.Bytes())
 }
 
-func GenerateHandleCommand(events []EventData) string {
+func GenerateHandleCommand(aggregateName string, events []EventData) string {
 	const temp = `// Code generated .* DO NOT EDIT\.
 package domain
 
@@ -107,20 +120,20 @@ import (
 )
 
 // HandleCommand todo
-func (a *PlantAggregate) HandleCommand(ctx context.Context, cmd eh.Command) error {
+func (a *{{(index . 0).AggregateName}}) HandleCommand(ctx context.Context, cmd eh.Command) error {
 	switch cmd := cmd.(type) { {{range .}}
-	case *{{.Event}}:
-		return a.handle{{.Event}}(ctx, cmd){{end}}
+	case *{{.Event.Name}}:
+		return a.handle{{.Event.Name}}(ctx, cmd){{end}}
 	}
 	return fmt.Errorf("Command %s not handled, run generator again", cmd.CommandType())
 }
 `
 	t := template.Must(template.New("handle").Parse(temp))
 	var buff bytes.Buffer
-	t.ExecuteTemplate(&buff, "handle", events)
+	t.ExecuteTemplate(&buff, "handle", makeAggregateData(aggregateName, events))
 	return string(buff.Bytes())
 }
-func GenerateCommandHandlers(events []EventData) string {
+func GenerateCommandHandlers(aggregateName string, events []EventData) string {
 	const temp = `package domain
 
 import (
@@ -129,13 +142,13 @@ import (
 	eh "github.com/looplab/eventhorizon"
 )
 {{range .}}
-func (a *PlantAggregate)handle{{.Event}}(ctx context.Context, cmd *{{.Event}}) error {
+func (a *{{.AggregateName}})handle{{.Event.Name}}(ctx context.Context, cmd *{{.Event.Name}}) error {
 	return nil
 }
 {{end}}`
 	t := template.Must(template.New("handle").Parse(temp))
 	var buff bytes.Buffer
-	t.ExecuteTemplate(&buff, "handle", events)
+	t.ExecuteTemplate(&buff, "handle", makeAggregateData(aggregateName, events))
 	return string(buff.Bytes())
 }
 
@@ -149,7 +162,7 @@ func Write(outputFolder, data string) error {
 	return err
 }
 
-func GenerateApplyEvent(events []EventData) string {
+func GenerateApplyEvent(aggregateName string, events []EventData) string {
 	const temp = `// Code generated .* DO NOT EDIT\.
 package domain
 
@@ -161,21 +174,21 @@ import (
 )
 
 // ApplyEvent implements the ApplyEvent method of the Aggregate interface.
-func (a *PlantAggregate) ApplyEvent(ctx context.Context, event eh.Event) error {
+func (a *{{(index . 0).AggregateName}}) ApplyEvent(ctx context.Context, event eh.Event) error {
 	switch event.EventType() { {{range .}}
-	case {{.Event}}Type:
-		return a.apply{{.Event}}(ctx, event){{end}}
+	case {{.Event.Name}}Type:
+		return a.apply{{.Event.Name}}(ctx, event){{end}}
 	}
 	return fmt.Errorf("Event %s not handled, run generator again", event.EventType())
 }
 `
 	t := template.Must(template.New("handle").Parse(temp))
 	var buff bytes.Buffer
-	t.ExecuteTemplate(&buff, "handle", events)
+	t.ExecuteTemplate(&buff, "handle", makeAggregateData(aggregateName, events))
 	return string(buff.Bytes())
 }
 
-func GenerateEventAppliers(events []EventData) string {
+func GenerateEventAppliers(aggregateName string, events []EventData) string {
 	const temp = `package domain
 
 import (
@@ -184,16 +197,18 @@ import (
 	eh "github.com/looplab/eventhorizon"
 )
 {{range .}}
-func (a *PlantAggregate) apply{{.Event}}(ctx context.Context, event eh.Event) error {
-	_, ok := event.Data().({{.Event}})
+func (a *{{.AggregateName}}) apply{{.Event.Name}}(ctx context.Context, event eh.Event) error {
+	_, ok := event.Data().({{.Event.Name}})
 	if !ok {
-		panic("INVALID apply{{.Event}} is trying to convert invalid data")
+		panic("INVALID apply{{.Event.Name}} is trying to convert invalid data")
 	}
 	return nil
 }
 {{end}}`
+
+	data := makeAggregateData(aggregateName, events)
 	t := template.Must(template.New("handle").Parse(temp))
 	var buff bytes.Buffer
-	t.ExecuteTemplate(&buff, "handle", events)
+	t.ExecuteTemplate(&buff, "handle", data)
 	return string(buff.Bytes())
 }

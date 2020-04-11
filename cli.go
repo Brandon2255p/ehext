@@ -12,14 +12,16 @@ import (
 )
 
 func main() {
+	aggregateName := ""
 	searchLocation := ""
 	writeEventAppliers := false
 	writeCommandHandlers := false
 	flag.BoolVar(&writeEventAppliers, "appliers", false, "Overwrites the event appliers file")
 	flag.BoolVar(&writeCommandHandlers, "hanlders", false, "Overwrites the command handler class")
-	flag.StringVar(&searchLocation, "search", "./domain/events.go", "the place to look for events")
+	flag.StringVar(&aggregateName, "aggregate", "", "the name of the aggregate. ThingAggregate")
+	flag.StringVar(&searchLocation, "search", "", "the place to look for events")
 	flag.Parse()
-	if searchLocation == "" {
+	if searchLocation == "" || aggregateName == "" {
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
@@ -40,7 +42,7 @@ func main() {
 		name := horizgen.ExtractName(class)
 		comment := horizgen.ExtractComment(class)
 		log.Printf("%d of %d : %s", i, len(classes), name)
-		data := horizgen.EventData{Event: name, Description: comment}
+		data := horizgen.EventData{Name: name, Description: comment}
 		outputFile := path.Join(directory, "gen%s.go", name)
 		if strings.HasSuffix(name, "Event") {
 			events = append(events, data)
@@ -61,13 +63,13 @@ func main() {
 			horizgen.Write(outputFile, registerCommands)
 		}
 		{
-			handleCommands := horizgen.GenerateHandleCommand(commands)
+			handleCommands := horizgen.GenerateHandleCommand(aggregateName, commands)
 			outputFile := path.Join(directory, "genhandleCommand.go")
 			log.Printf("Writing %s", outputFile)
 			horizgen.Write(outputFile, handleCommands)
 		}
 		if writeCommandHandlers {
-			commandHandlers := horizgen.GenerateCommandHandlers(commands)
+			commandHandlers := horizgen.GenerateCommandHandlers(aggregateName, commands)
 			outputFile := path.Join(directory, "commandHandlers.go")
 			log.Printf("Writing %s", outputFile)
 			horizgen.Write(outputFile, commandHandlers)
@@ -75,13 +77,13 @@ func main() {
 	}
 	if len(events) > 0 {
 		{
-			applyEvent := horizgen.GenerateApplyEvent(events)
+			applyEvent := horizgen.GenerateApplyEvent(aggregateName, events)
 			outputFile := path.Join(directory, "genapplyevent.go")
 			log.Printf("Writing %s", outputFile)
 			horizgen.Write(outputFile, applyEvent)
 		}
 		if writeEventAppliers {
-			applyEvent := horizgen.GenerateEventAppliers(events)
+			applyEvent := horizgen.GenerateEventAppliers(aggregateName, events)
 			outputFile := path.Join(directory, "eventappliers.go")
 			log.Printf("Writing %s", outputFile)
 			horizgen.Write(outputFile, applyEvent)
