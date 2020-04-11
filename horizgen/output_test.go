@@ -13,7 +13,8 @@ func TestGenerateEventType(t *testing.T) {
 		Event:       "ThingyCreatedEvent",
 		Description: "This is how thingies are made",
 	}
-	expected := `package domain
+	expected := `// Code generated .* DO NOT EDIT\.
+package domain
 
 import (
 	eh "github.com/looplab/eventhorizon"
@@ -39,7 +40,8 @@ func TestGenerateCommandType(t *testing.T) {
 		Event:       "CreateCommand",
 		Description: "This is how thingies are made",
 	}
-	expected := `package domain
+	expected := `// Code generated .* DO NOT EDIT\.
+package domain
 
 import (
 	eh "github.com/looplab/eventhorizon"
@@ -62,7 +64,8 @@ func TestGenerateCommandRegisterType(t *testing.T) {
 		Event:       "StartOwnershipCommand",
 		Description: "This is how thingies are made",
 	}}
-	expected := `package domain
+	expected := `// Code generated .* DO NOT EDIT\.
+package domain
 
 import (
 	eh "github.com/looplab/eventhorizon"
@@ -102,7 +105,8 @@ func TestGenerateHandleCommand(t *testing.T) {
 		Event:       "StartOwnershipCommand",
 		Description: "This is how thingies are made",
 	}}
-	expected := `package domain
+	expected := `// Code generated .* DO NOT EDIT\.
+package domain
 
 import (
 	"context"
@@ -135,7 +139,8 @@ func TestGenerateApplyEvent(t *testing.T) {
 		Event:       "Thingy2CreatedEvent",
 		Description: "This is how thingies are made",
 	}}
-	expected := `package domain
+	expected := `// Code generated .* DO NOT EDIT\.
+package domain
 
 import (
 	"context"

@@ -6,18 +6,6 @@ import (
 	"text/template"
 )
 
-const templateCommand = `package domain
-
-import (
-	eh "github.com/looplab/eventhorizon"
-)
-
-const (
-	// {{.Event}}Type {{.Description}}
-	{{.Event}}Type eh.CommandType = "{{.Event}}"
-)
-`
-
 type EventData struct {
 	Event       string
 	Description string
@@ -30,7 +18,8 @@ type EventMember struct {
 }
 
 func GenerateEvent(e EventData) string {
-	const templateEvent = `package domain
+	const templateEvent = `// Code generated .* DO NOT EDIT\.
+package domain
 
 import (
 	eh "github.com/looplab/eventhorizon"
@@ -54,6 +43,18 @@ func init() {
 }
 
 func GenerateCommand(e EventData) string {
+	const templateCommand = `// Code generated .* DO NOT EDIT\.
+package domain
+
+import (
+	eh "github.com/looplab/eventhorizon"
+)
+
+const (
+	// {{.Event}}Type {{.Description}}
+	{{.Event}}Type eh.CommandType = "{{.Event}}"
+)
+`
 	t := template.Must(template.New("command").Parse(templateCommand))
 	var buff bytes.Buffer
 	t.ExecuteTemplate(&buff, "command", e)
@@ -61,7 +62,8 @@ func GenerateCommand(e EventData) string {
 }
 
 func GenerateRegisterCommand(events []EventData) string {
-	const temp = `package domain
+	const temp = `// Code generated .* DO NOT EDIT\.
+package domain
 
 import (
 	eh "github.com/looplab/eventhorizon"
@@ -94,7 +96,8 @@ func registerCommands(h *bus.CommandHandler, c eh.CommandHandler) error {
 }
 
 func GenerateHandleCommand(events []EventData) string {
-	const temp = `package domain
+	const temp = `// Code generated .* DO NOT EDIT\.
+package domain
 
 import (
 	"context"
@@ -147,7 +150,8 @@ func Write(outputFolder, data string) error {
 }
 
 func GenerateApplyEvent(events []EventData) string {
-	const temp = `package domain
+	const temp = `// Code generated .* DO NOT EDIT\.
+package domain
 
 import (
 	"context"
