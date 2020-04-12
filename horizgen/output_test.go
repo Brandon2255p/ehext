@@ -24,12 +24,14 @@ import (
 const (
 	// ThingyCreatedEventType This is how thingies are made
 	ThingyCreatedEventType eh.EventType = "ThingyCreatedEvent"
+
 )
 
 func init() {
 	eh.RegisterEventData(ThingyCreatedEventType, func() eh.EventData {
 		return &ThingyCreatedEvent{}
 	})
+
 }
 `
 	output := horizgen.GenerateEvent(input)
@@ -53,6 +55,7 @@ import (
 const (
 	// CreateCommandType This is how thingies are made
 	CreateCommandType eh.CommandType = "CreateCommand"
+
 )
 `
 	output := horizgen.GenerateCommand(input)

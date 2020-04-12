@@ -34,7 +34,7 @@ type EventMember struct {
 }
 
 // GenerateEvent todo
-func GenerateEvent(e EventData) string {
+func GenerateEvent(e ...EventData) string {
 	const templateEvent = `package domain
 
 // Code generated .* DO NOT EDIT\.
@@ -44,14 +44,16 @@ import (
 )
 
 const (
-	// {{.Name}}Type {{.Description}}
+{{range .}}	// {{.Name}}Type {{.Description}}
 	{{.Name}}Type eh.EventType = "{{.Name}}"
+{{end}}
 )
 
 func init() {
-	eh.RegisterEventData({{.Name}}Type, func() eh.EventData {
+{{range .}}	eh.RegisterEventData({{.Name}}Type, func() eh.EventData {
 		return &{{.Name}}{}
 	})
+{{end}}
 }
 `
 	t := template.Must(template.New("event").Parse(templateEvent))
@@ -61,7 +63,7 @@ func init() {
 }
 
 // GenerateCommand todo
-func GenerateCommand(e EventData) string {
+func GenerateCommand(e ...EventData) string {
 	const templateCommand = `package domain
 
 // Code generated .* DO NOT EDIT\.
@@ -72,8 +74,9 @@ import (
 )
 
 const (
-	// {{.Name}}Type {{.Description}}
+{{range .}}	// {{.Name}}Type {{.Description}}
 	{{.Name}}Type eh.CommandType = "{{.Name}}"
+{{end}}
 )
 `
 	t := template.Must(template.New("command").Parse(templateCommand))
