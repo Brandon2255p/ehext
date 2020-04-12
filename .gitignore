@@ -15,3 +15,5 @@
 # vendor/
 horizgen/_generate.go
 example/domain/gen*.go
+example/domain/commandhandlers.go
+example/domain/eventappliers.go

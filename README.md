@@ -6,9 +6,19 @@
 # ehext
 Extensions for the go package github.com/looplab/eventhorizon
 
+## Scaffolding Generator
+The ehext generator will read command and event structs and generate the domain scaffolding needed to use eventhorizon
+
+To install the generator:
 ```
 go get github.com/Brandon2255p/ehext
 ```
 ```
 go install  github.com/Brandon2255p/ehext
 ```
+
+## Example
+- Install the generator 
+- Download the example code
+- `cd ehext/example/domain`
+- `go generate`
