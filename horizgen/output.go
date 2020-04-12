@@ -63,25 +63,39 @@ func init() {
 }
 
 // GenerateCommand todo
-func GenerateCommand(e ...EventData) string {
+func GenerateCommand(aggregate string, e ...EventData) string {
 	const templateCommand = `package domain
 
 // Code generated .* DO NOT EDIT\.
 
-
 import (
+	"github.com/google/uuid"
 	eh "github.com/looplab/eventhorizon"
 )
 
 const (
-{{range .}}	// {{.Name}}Type {{.Description}}
-	{{.Name}}Type eh.CommandType = "{{.Name}}"
-{{end}}
-)
-`
+{{range .}}	// {{.Event.Name}}Type {{.Event.Description}}
+	{{.Event.Name}}Type eh.CommandType = "{{.Event.Name}}"
+{{end}})
+{{range .}}
+// AggregateID generate for {{.Event.Name}}
+func (c *{{.Event.Name}}) AggregateID() uuid.UUID {
+	return c.ID
+}
+
+// AggregateType generate for {{.Event.Name}}
+func (c *{{.Event.Name}}) AggregateType() eh.AggregateType {
+	return {{.AggregateName}}Type
+}
+
+// CommandType generate for {{.Event.Name}}
+func (c *{{.Event.Name}}) CommandType() eh.CommandType {
+	return {{.Event.Name}}Type
+}
+{{end}}`
 	t := template.Must(template.New("command").Parse(templateCommand))
 	var buff bytes.Buffer
-	t.ExecuteTemplate(&buff, "command", e)
+	t.ExecuteTemplate(&buff, "command", makeAggregateData(aggregate, e))
 	return string(buff.Bytes())
 }
 

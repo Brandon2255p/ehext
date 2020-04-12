@@ -1,6 +1,7 @@
 package horizgen_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/Brandon2255p/ehext/horizgen"
@@ -57,18 +58,33 @@ func TestGenerateCommandType(t *testing.T) {
 
 // Code generated .* DO NOT EDIT\.
 
-
 import (
+	"github.com/google/uuid"
 	eh "github.com/looplab/eventhorizon"
 )
 
 const (
 	// CreateCommandType This is how thingies are made
 	CreateCommandType eh.CommandType = "CreateCommand"
-
 )
+
+// AggregateID generate for CreateCommand
+func (c *CreateCommand) AggregateID() uuid.UUID {
+	return c.ID
+}
+
+// AggregateType generate for CreateCommand
+func (c *CreateCommand) AggregateType() eh.AggregateType {
+	return ThingAggregateType
+}
+
+// CommandType generate for CreateCommand
+func (c *CreateCommand) CommandType() eh.CommandType {
+	return CreateCommandType
+}
 `
-	output := horizgen.GenerateCommand(input)
+	output := horizgen.GenerateCommand("ThingAggregate", input)
+	fmt.Print(output)
 	assert.Equal(t, expected, output)
 }
 

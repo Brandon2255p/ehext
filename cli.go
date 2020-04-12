@@ -52,7 +52,7 @@ func main() {
 	}
 	if len(commands) > 0 {
 		{
-			generated := horizgen.GenerateCommand(commands...)
+			generated := horizgen.GenerateCommand(aggregateName, commands...)
 			outputFile := path.Join(directory, "gencommandtypes.go")
 			horizgen.Write(outputFile, generated)
 		}
