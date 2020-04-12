@@ -269,6 +269,30 @@ func (a *ThingAggregate) applyThingy2CreatedEvent(ctx context.Context, event eh.
 	assert.Equal(t, expected, output)
 }
 
+func TestGenerateRegisterAggregate(t *testing.T) {
+	expected := `package domain
+
+import (
+	"github.com/google/uuid"
+	eh "github.com/looplab/eventhorizon"
+	"github.com/looplab/eventhorizon/aggregatestore/events"
+)
+
+func init() {
+	eh.RegisterAggregate(func(id uuid.UUID) eh.Aggregate {
+		return &ThingyAggregate{
+			AggregateBase: events.NewAggregateBase(ThingyAggregateType, id),
+		}
+	})
+}
+
+// interface check
+var _ = eh.Aggregate(&ThingyAggregate{})
+`
+	output := horizgen.GenerateRegisterAggregate("ThingyAggregate")
+	require.Equal(t, expected, output)
+}
+
 func TestWrite(t *testing.T) {
 	input := horizgen.EventData{
 		Name:        "ThingyCreatedEvent",
@@ -278,7 +302,3 @@ func TestWrite(t *testing.T) {
 	require.NoError(t, err)
 	require.FileExists(t, ("./_generate.go"))
 }
-
-// a.applyThingy2CreatedEvent(ctx context.Context, event Thingy2CreatedEvent) error {
-// 	a.started = true
-// }

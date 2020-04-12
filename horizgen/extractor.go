@@ -13,7 +13,7 @@ import (
 
 // ExtractClasses will pull comments, struct and members from a go file
 func ExtractClasses(input string) []string {
-	pattern := regexp.MustCompile(`(?P<comment>\/\/\s*[\w\s\d]+)*type[\s\w]+struct\s+{[\n\t\w\s:"\\.` + "`" + `]+}`)
+	pattern := regexp.MustCompile(`(?P<comment>\/\/\s*[\w\s\d]+)*type[\s\w]+struct\s+{[\[\]\n\t\w\s:"\\.` + "`" + `]+}`)
 	return pattern.FindAllString(input, -1)
 }
 

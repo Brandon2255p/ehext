@@ -50,6 +50,9 @@ func main() {
 			commands = append(commands, data)
 		}
 	}
+	generated := horizgen.GenerateRegisterAggregate(aggregateName)
+	outputFile := path.Join(directory, "genregisteraggregate.go")
+	horizgen.Write(outputFile, generated)
 	if len(commands) > 0 {
 		{
 			generated := horizgen.GenerateCommand(aggregateName, commands...)

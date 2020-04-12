@@ -250,3 +250,31 @@ func (a *{{.AggregateName}}) apply{{.Event.Name}}(ctx context.Context, event eh.
 	t.ExecuteTemplate(&buff, "handle", data)
 	return string(buff.Bytes())
 }
+
+// GenerateRegisterAggregate todo
+func GenerateRegisterAggregate(aggregateName string) string {
+	const temp = `package domain
+
+import (
+	"github.com/google/uuid"
+	eh "github.com/looplab/eventhorizon"
+	"github.com/looplab/eventhorizon/aggregatestore/events"
+)
+
+func init() {
+	eh.RegisterAggregate(func(id uuid.UUID) eh.Aggregate {
+		return &{{ . }}{
+			AggregateBase: events.NewAggregateBase({{ . }}Type, id),
+		}
+	})
+}
+
+// interface check
+var _ = eh.Aggregate(&{{ . }}{})
+`
+
+	t := template.Must(template.New("handle").Parse(temp))
+	var buff bytes.Buffer
+	t.ExecuteTemplate(&buff, "handle", aggregateName)
+	return string(buff.Bytes())
+}

@@ -28,6 +28,7 @@ func TestGenerate(t *testing.T) {
 	type TestEvent struct {
 		TestAy  string
 		TestBee int
+		TestSlice []int
 	}
 `
 
