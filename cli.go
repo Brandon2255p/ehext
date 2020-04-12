@@ -43,14 +43,15 @@ func main() {
 		comment := horizgen.ExtractComment(class)
 		log.Printf("%d of %d : %s", i, len(classes), name)
 		data := horizgen.EventData{Name: name, Description: comment}
-		outputFile := path.Join(directory, "gen%s.go", name)
 		if strings.HasSuffix(name, "Event") {
 			events = append(events, data)
 			generated := horizgen.GenerateEvent(data)
+			outputFile := path.Join(directory, "geneventtypes.go")
 			horizgen.Write(outputFile, generated)
 		} else {
 			commands = append(commands, data)
 			generated := horizgen.GenerateCommand(data)
+			outputFile := path.Join(directory, "gencommandtypes.go")
 			horizgen.Write(outputFile, generated)
 		}
 	}
@@ -58,19 +59,19 @@ func main() {
 
 		{
 			registerCommands := horizgen.GenerateRegisterCommand(commands)
-			outputFile := path.Join(directory, "genregisterCommands.go")
+			outputFile := path.Join(directory, "genregistercommands.go")
 			log.Printf("Writing %s", outputFile)
 			horizgen.Write(outputFile, registerCommands)
 		}
 		{
 			handleCommands := horizgen.GenerateHandleCommand(aggregateName, commands)
-			outputFile := path.Join(directory, "genhandleCommand.go")
+			outputFile := path.Join(directory, "genhandlecommand.go")
 			log.Printf("Writing %s", outputFile)
 			horizgen.Write(outputFile, handleCommands)
 		}
 		if writeCommandHandlers {
 			commandHandlers := horizgen.GenerateCommandHandlers(aggregateName, commands)
-			outputFile := path.Join(directory, "commandHandlers.go")
+			outputFile := path.Join(directory, "commandhandlers.go")
 			log.Printf("Writing %s", outputFile)
 			horizgen.Write(outputFile, commandHandlers)
 		}
