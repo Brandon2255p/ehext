@@ -9,10 +9,15 @@ import (
 )
 
 func TestGenerateEventType(t *testing.T) {
-	input := horizgen.EventData{
-		Name:        "ThingyCreatedEvent",
-		Description: "This is how thingies are made",
-	}
+	input := []horizgen.EventData{
+		{
+			Name:        "ThingyCreatedEvent",
+			Description: "This is how thingies are made",
+		},
+		{
+			Name:        "Thingy2CreatedEvent",
+			Description: "This is how thingies are made",
+		}}
 	expected := `package domain
 
 // Code generated .* DO NOT EDIT\.
@@ -24,6 +29,8 @@ import (
 const (
 	// ThingyCreatedEventType This is how thingies are made
 	ThingyCreatedEventType eh.EventType = "ThingyCreatedEvent"
+	// Thingy2CreatedEventType This is how thingies are made
+	Thingy2CreatedEventType eh.EventType = "Thingy2CreatedEvent"
 
 )
 
@@ -31,10 +38,13 @@ func init() {
 	eh.RegisterEventData(ThingyCreatedEventType, func() eh.EventData {
 		return &ThingyCreatedEvent{}
 	})
+	eh.RegisterEventData(Thingy2CreatedEventType, func() eh.EventData {
+		return &Thingy2CreatedEvent{}
+	})
 
 }
 `
-	output := horizgen.GenerateEvent(input)
+	output := horizgen.GenerateEvent(input...)
 	assert.Equal(t, expected, output)
 }
 

@@ -45,18 +45,17 @@ func main() {
 		data := horizgen.EventData{Name: name, Description: comment}
 		if strings.HasSuffix(name, "Event") {
 			events = append(events, data)
-			generated := horizgen.GenerateEvent(data)
-			outputFile := path.Join(directory, "geneventtypes.go")
-			horizgen.Write(outputFile, generated)
-		} else {
+		}
+		if strings.HasSuffix(name, "Command") {
 			commands = append(commands, data)
-			generated := horizgen.GenerateCommand(data)
-			outputFile := path.Join(directory, "gencommandtypes.go")
-			horizgen.Write(outputFile, generated)
 		}
 	}
 	if len(commands) > 0 {
-
+		{
+			generated := horizgen.GenerateCommand(commands...)
+			outputFile := path.Join(directory, "gencommandtypes.go")
+			horizgen.Write(outputFile, generated)
+		}
 		{
 			registerCommands := horizgen.GenerateRegisterCommand(commands)
 			outputFile := path.Join(directory, "genregistercommands.go")
@@ -77,6 +76,11 @@ func main() {
 		}
 	}
 	if len(events) > 0 {
+		{
+			generated := horizgen.GenerateEvent(events...)
+			outputFile := path.Join(directory, "geneventtypes.go")
+			horizgen.Write(outputFile, generated)
+		}
 		{
 			applyEvent := horizgen.GenerateApplyEvent(aggregateName, events)
 			outputFile := path.Join(directory, "genapplyevent.go")
