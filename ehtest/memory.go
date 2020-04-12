@@ -22,13 +22,13 @@ var aggType eh.AggregateType
 
 var startTime time.Time
 
-// Eveestorent is used to load startup events
+// Event is used to load startup events
 type Event struct {
 	Type eh.EventType
 	Data eh.EventData
 }
 
-// NewMemoryFixture r
+// NewMemoryFixture todo
 func NewMemoryFixture(aggregateType eh.AggregateType, fixtureTime time.Time) (ctx context.Context,
 	bus *eventbus.EventBus,
 	store *eventstore.EventStore,
@@ -47,8 +47,8 @@ func NewMemoryFixture(aggregateType eh.AggregateType, fixtureTime time.Time) (ct
 	return
 }
 
-// AssertEvents f
-func AssertEvents(t *testing.T, aggregateID uuid.UUID, expected []Event) {
+// AssertEvents todo
+func AssertEvents(t *testing.T, aggregateID uuid.UUID, expected ...Event) {
 	actual, err := estore.Load(testCtx, aggregateID)
 	assert.NoError(t, err)
 	assert.Len(t, actual, len(expected))
@@ -59,7 +59,8 @@ func AssertEvents(t *testing.T, aggregateID uuid.UUID, expected []Event) {
 	}
 }
 
-func LoadStartupEvents(t *testing.T, aggregateID uuid.UUID, expected []Event) {
+// LoadStartupEvents todo
+func LoadStartupEvents(t *testing.T, aggregateID uuid.UUID, expected ...Event) {
 	evt := make([]eh.Event, len(expected))
 	for i, e := range expected {
 		aggEvent := eh.NewEventForAggregate(
